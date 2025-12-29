@@ -39,22 +39,36 @@
             display: block !important; /* Always show the message */
         }
 
-        /* PDF preview styling */
+       /* PDF preview container */
         .pdf-preview {
             display: flex;
+            flex-direction: column;
+            /* Stack icon and filename vertically */
             justify-content: center;
             align-items: center;
             height: 150px;
             background-color: #e9ecef;
-            font-size: 1rem;
+            padding: 10px;
             text-align: center;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            /* Hide overflow */
         }
 
         /* PDF link styling */
         .pdf-preview a {
             text-decoration: none;
             color: #0d6efd;
+            font-size: 0.9rem;
+            display: block;
+            word-wrap: break-word;
+            /* Wrap long filenames */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            /* Show "..." for very long text */
+            max-width: 100%;
         }
+
 
         /* Uniform size for images and PDF previews */
         .card-img-top,
