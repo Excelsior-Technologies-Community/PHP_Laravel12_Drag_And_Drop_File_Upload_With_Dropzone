@@ -3,42 +3,38 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laravel 12 Drag & Drop File Upload</title>
+    <title>Dropzone File Upload</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Bootstrap CSS for layout and styling -->
+    <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Dropzone CSS for drag & drop functionality -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css">
+    <!-- Dropzone CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css" rel="stylesheet">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+    <!-- Dropzone JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 
     <style>
-        /* Page background color */
-        body {
-            background-color: #f5f6fa;
-        }
+        body { background: #f8f9fa; }
+        h2 { text-align: center; margin-bottom: 30px; font-weight: 700; }
 
-        /* Card styling for uploaded files */
-        .card {
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Dropzone styling */
         .dropzone {
             border: 2px dashed #0d6efd;
             border-radius: 10px;
-            background: #f8f9fa;
-            padding: 40px 20px;
+            background: #ffffff;
+            padding: 30px;
         }
 
-        /* Dropzone default message */
-        .dz-message {
-            font-size: 1.2rem;
-            color: #0d6efd;
-            display: block !important; /* Always show the message */
+        .card {
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-radius: 10px;
         }
 
+<<<<<<< HEAD
         /* PDF preview styling */
        /* PDF preview container */
         .pdf-preview {
@@ -76,179 +72,122 @@
         .pdf-preview {
             width: 100%;
             height: 150px;
+=======
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+
+        .file-badge {
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 5px;
+            background: #6c757d;
+            color: white;
+            margin-right: 5px;
+        }
+
+        .card-img-top {
+            max-height: 150px;
+>>>>>>> development
             object-fit: cover;
         }
+
+        .btn-sm { font-size: 0.75rem; }
     </style>
 </head>
 
 <body>
 
 <div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
+    <h2>Professional Dropzone File Upload</h2>
 
-            <div class="card p-4">
-                <!-- Page Heading -->
-                <h3 class="text-center mb-4">Laravel 12 Drag & Drop File Upload</h3>
-
-                <!-- Dropzone Upload Form -->
-                <form action="{{ route('dropzone.store') }}"
-                      method="POST"
-                      enctype="multipart/form-data"
-                      class="dropzone"
-                      id="image-upload">
-                    @csrf
-                    <!-- Dropzone default message -->
-                    <div class="dz-message" id="dz-message">
-                        <h5>Drag & Drop your files here</h5>
-                        <p>or click to select files</p>
-                        <span class="text-muted">
-                            Accepted: jpeg, jpg, png, pdf | Max: 5MB
-                        </span>
-                    </div>
-                </form>
-
-                <!-- Uploaded Files Section -->
-                <h5 class="mt-4">Uploaded Files:</h5>
-                <div class="row mt-2" id="existing-files">
-                    <!-- Loop through all uploaded images -->
-                    @foreach($images as $image)
-                        @php
-                            // Get file extension to decide display type
-                            $extension = strtolower(pathinfo($image->file_name, PATHINFO_EXTENSION));
-                        @endphp
-
-                        <div class="col-3 mb-3" id="image-{{ $image->id }}">
-                            <div class="card shadow-sm">
-
-                                <!-- Display image preview if image file -->
-                                @if(in_array($extension, ['jpg','jpeg','png']))
-                                    <img src="{{ asset('storage/'.$image->file_path) }}"
-                                         class="card-img-top"
-                                         alt="{{ $image->original_name }}">
-                                <!-- Display PDF preview if PDF file -->
-                                @elseif($extension === 'pdf')
-                                    <div class="pdf-preview">
-                                        <a href="{{ asset('storage/'.$image->file_path) }}" target="_blank">
-                                            📄 {{ $image->original_name }}
-                                        </a>
-                                    </div>
-                                <!-- Other file types fallback -->
-                                @else
-                                    <div class="pdf-preview">
-                                        <small>{{ $image->original_name }}</small>
-                                    </div>
-                                @endif
-
-                                <!-- Delete button for each file -->
-                                <div class="card-body p-2 text-center">
-                                    <button class="btn btn-sm btn-danger delete-file"
-                                            data-id="{{ $image->id }}">
-                                        Delete
-                                    </button>
-                                </div>
-
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-
+    <!-- Dropzone -->
+    <form method="POST" action="{{ route('dropzone.store') }}" class="dropzone mb-5" id="my-dropzone">
+        @csrf
+        <div class="dz-message text-center">
+            <h4>Drag & Drop files here or click to upload</h4>
+            <p class="text-muted">Allowed: JPG, PNG, GIF, PDF, DOCX</p>
         </div>
+    </form>
+
+    <!-- Files -->
+    <h4 class="mb-4">Uploaded Files</h4>
+    <div class="row g-3">
+
+        @foreach($images as $img)
+        <div class="col-md-3 col-sm-6">
+            <div class="card shadow-sm">
+
+                @if(in_array(strtolower(pathinfo($img->file_name, PATHINFO_EXTENSION)), ['jpg','jpeg','png','gif']))
+                    <img src="{{ asset('storage/' . $img->file_path) }}" class="card-img-top">
+                @else
+                    <img src="https://via.placeholder.com/150?text={{ strtoupper(pathinfo($img->file_name, PATHINFO_EXTENSION)) }}" class="card-img-top">
+                @endif
+
+                <div class="card-body">
+                    <h6 class="text-truncate">{{ $img->file_name }}</h6>
+
+                    <div class="mb-2">
+                        <span class="file-badge">Size: {{ round($img->file_size / 1024, 2) }} KB</span>
+                        <span class="file-badge">Type: {{ pathinfo($img->file_name, PATHINFO_EXTENSION) }}</span>
+                    </div>
+
+                    <div class="d-flex">
+                        <a href="{{ route('dropzone.download', $img->id) }}"
+                           class="btn btn-sm btn-primary w-50 me-1">
+                           Download
+                        </a>
+
+                        <!-- ✅ FIXED DELETE BUTTON -->
+                        <button class="btn btn-sm btn-danger w-50 delete-file"
+                                data-id="{{ $img->id }}">
+                            Delete
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        @endforeach
+
     </div>
 </div>
 
-<!-- Dropzone JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-<!-- jQuery for AJAX -->
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-
 <script>
-    // Dropzone configuration
-    Dropzone.options.imageUpload = {
-        paramName: "file", // The name used for the uploaded file
-        maxFilesize: 5,    // Max file size in MB
-        acceptedFiles: ".jpeg,.jpg,.png,.pdf", // Accepted file types
-        addRemoveLinks: true, // Show remove links in Dropzone
+Dropzone.options.myDropzone = {
+    paramName: "file",
+    maxFilesize: 10,
+    acceptedFiles: ".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx",
+    success: function () {
+        location.reload();
+    }
+};
 
-        // Add CSRF token header for Laravel
-        headers: {
-            'X-CSRF-TOKEN': "{{ csrf_token() }}"
-        },
+// ✅ DELETE WITH POPUP + AJAX
+$(document).on('click', '.delete-file', function () {
 
-        // On successful upload
-        success: function (file, response) {
-            if (response.success) {
-                // Remove file preview from Dropzone after upload
-                if (file.previewElement) {
-                    file.previewElement.remove();
-                }
+    let id = $(this).data('id');
 
-                // Determine file extension
-                let extension = file.name.split('.').pop().toLowerCase();
-                let cardHtml = '';
+    if (confirm('Are you sure you want to delete this file?')) {
 
-                // If uploaded file is image
-                if (['jpg','jpeg','png'].includes(extension)) {
-                    cardHtml = `
-                    <div class="col-3 mb-3" id="image-${response.id}">
-                        <div class="card shadow-sm">
-                            <img src="${response.url}" class="card-img-top" alt="${file.name}">
-                            <div class="card-body p-2 text-center">
-                                <button class="btn btn-sm btn-danger delete-file" data-id="${response.id}">
-                                    Delete
-                                </button>
-                            </div>
-                        </div>
-                    </div>`;
-                } else {
-                    // For PDFs and other file types
-                    cardHtml = `
-                    <div class="col-3 mb-3" id="image-${response.id}">
-                        <div class="card shadow-sm">
-                            <div class="pdf-preview">
-                                <a href="${response.url}" target="_blank">📄 ${file.name}</a>
-                            </div>
-                            <div class="card-body p-2 text-center">
-                                <button class="btn btn-sm btn-danger delete-file" data-id="${response.id}">
-                                    Delete
-                                </button>
-                            </div>
-                        </div>
-                    </div>`;
-                }
-
-                // Append the uploaded file to the uploaded files section
-                $('#existing-files').append(cardHtml);
+        $.ajax({
+            url: '/dropzone/delete/' + id,
+            type: 'DELETE',
+            data: {
+                _token: '{{ csrf_token() }}'
+            },
+            success: function (res) {
+                alert(res.success);
+                location.reload();
+            },
+            error: function () {
+                alert('Error deleting file');
             }
-        },
+        });
 
-        // Remove file preview if removed from Dropzone
-        removedfile: function(file) {
-            if (file.previewElement) file.previewElement.remove();
-        }
-    };
-
-    // Handle file deletion using AJAX
-    $(document).on('click', '.delete-file', function () {
-        let id = $(this).data('id');
-
-        if (confirm('Are you sure you want to delete this file?')) {
-            $.ajax({
-                url: '/dropzone/' + id,
-                type: 'DELETE',
-                data: {
-                    _token: "{{ csrf_token() }}"
-                },
-                success: function (response) {
-                    if (response.success) {
-                        // Remove the deleted file card from UI
-                        $('#image-' + id).remove();
-                    }
-                }
-            });
-        }
-    });
+    }
+});
 </script>
 
 </body>
