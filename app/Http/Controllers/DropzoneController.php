@@ -10,29 +10,35 @@ class DropzoneController extends Controller
 {
     public function index()
     {
-        $images = Image::all(); // get all uploaded files
+        $images = Image::latest()->get();
         return view('dropzone', compact('images'));
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'file' => 'required|file|max:10240', // max 10MB
-        ]);
+{
+    $request->validate([
+        'file' => 'required|file|max:10240',
+    ]);
 
-        $file = $request->file('file');
-        $path = $file->store('uploads', 'public');
+    $file = $request->file('file');
+    $path = $file->store('uploads', 'public');
 
-        $image = new Image();
-        $image->file_name = $file->getClientOriginalName();
-        $image->original_name = $file->getClientOriginalName();
-        $image->file_path = $path;
-        $image->file_size = $file->getSize();
-        $image->status = 1; // active
-        $image->save();
+    $image = new \App\Models\Image();
+    $image->file_name = $file->getClientOriginalName();
+    $image->original_name = $file->getClientOriginalName();
+    $image->file_path = $path;
+    $image->file_size = $file->getSize();
+    $image->status = 1;
+    $image->save();
 
-        return response()->json(['success' => $file->getClientOriginalName()]);
-    }
+   
+    $html = view('partials.file-card', ['img' => $image])->render();
+
+    return response()->json([
+        'success' => true,
+        'html' => $html
+    ]);
+}
 
     public function destroy($id)
     {
